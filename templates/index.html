@@ -1,0 +1,63 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo List</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.7/dist/tailwind.min.css">
+</head>
+
+<body class="bg-gray-100 font-sans">
+  <div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-4">TODO List</h1>
+
+    <!-- エラーの一覧 -->
+    {{range .Errors}}
+    <p><em class="text-red-500">{{.}}</em></p>
+    {{end}}
+
+    <!-- TODOの一覧 -->
+    <ul class="grid grid-cols-1 gap-4">
+      {{range .Todos}}
+      <li class="bg-white p-4 shadow rounded-lg flex justify-between items-center">
+        <p class="flex-grow {{if .Done}}line-through{{end}}">{{.Content}}</p>
+        <form action="/" method="POST" class="flex items-center">
+          <input type="hidden" name="id" value="{{.ID}}" />
+          <input type="hidden" name="done" value="{{if .Done}}0{{else}}1{{end}}" />
+          <span class="space-x-2">
+            {{if .Until}}
+              <span class="text-gray-500">{{FormatDateTime .Until}}</span>
+            {{end}}
+            <button type="submit" name="update" class="text-blue-500 hover:underline focus:outline-none">
+              {{if .Done}}未完了{{else}}完了{{end}}
+            </button>
+          </span>
+        </form>
+        <form action="/" method="POST">
+          <input type="hidden" name="id" value="{{.ID}}" />
+          <!-- main.goでc.FormValue("delete")の形でvalueの値を取得している -->
+          <input type="hidden" name="delete" value="削除" />
+          <button type="submit" name="delete" class="text-red-500 hover:underline focus:outline-none">
+            削除
+          </button>
+        </form>
+      </li>
+      {{end}}
+    </ul>
+
+    <!-- 入力エリア -->
+    <form action="/" method="POST" id="add-todo" class="mt-4">
+      <input type="hidden" name="id" value="" />
+      <div class="flex items-center space-x-4">
+        <input type="text" class="w-2/3 p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" name="content" placeholder="やることを入力" autofocus required />
+        <input type="datetime-local" class="w-1/5 p-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" name="until" value="" />
+        <button type="submit" class="flex-grow px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:bg-blue-400">登録</button>
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
+{{end}}
